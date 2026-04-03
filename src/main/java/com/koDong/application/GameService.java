@@ -114,7 +114,7 @@ public class GameService {
     }
 
     private Piece selectPiece(MoveValidator moveV, GameTurn turn) {
-        // 체스보드에서 null을 선택했는지 검증하는 로직
+        // 체스보드에서 null을 선택했는지, 또 같은 컬러를 선택했는지 검증하는 로직
         int[] position; // 놓을 피스 선택하기 위한 위치
         int originX; // 놓을 피스의 x위치
         int originY; // 놓을 피스의 y위치
@@ -124,9 +124,12 @@ public class GameService {
             position = userInput.enterPosition();
             originX = position[0];
             originY = position[1];
-            if (chessBoard.findPiece(originX, originY) == null) {
+            if (isSelectedPieceNull(originX, originY)) {
                 // 체스보드에서 null을 선택한 경우
                 System.out.println("---- 이 위치에는 아무런 피스가 없습니다. 다시 선택해주세요 ----");
+            } else if (!(isColorSameWithCurrentTurn(originX, originY, turn))) {
+                // 현재 턴 컬러와 같은 컬러의 피스를 선택하지 않은 경우
+                System.out.println("---- 같은 컬러 피스를 선택해주세요 ----");
             } else {
                 // 체스보드에서 null이 아닌 피스를 선택한 경우
                 selectedPiece = chessBoard.findPiece(position[0], position[1]);
@@ -144,7 +147,7 @@ public class GameService {
                         break;
                     }
                 } else {
-                    System.out.println(String.format("---- %s-%s-%d/%d는 현재 이동할 수 없습니다. 다시 선택해주세요 ----)", selectedPiece.getColor(), selectedPiece.getType(), selectedPiece.getCurrentX(), selectedPiece.getCurrentY()));
+                    System.out.println(String.format("---- %s-%s-%d/%d는 현재 이동할 수 없습니다. 다시 선택해주세요 ----", selectedPiece.getColor(), selectedPiece.getType(), selectedPiece.getCurrentX(), selectedPiece.getCurrentY()));
                 }
             }
 
@@ -190,6 +193,7 @@ public class GameService {
         return GameState.CONTINUE;
     }
 
+    // 유저 초기화
     private User initializeUser(PieceColor color) {
         System.out.println("---- 이름을 입력해주세요 ----");
 
@@ -205,6 +209,39 @@ public class GameService {
         return new User(PieceColor.WHITE, name);
     }
 
+
+    /**
+     * selectPiece메서드에서 놓을 피스를 선택할 때, 입력받은 x, y에 있는 피스는 null인지 검사
+     * @param originX 놓을 피스의 입력받은 x위치(null 확인 위해)
+     * @param originY 놓을 피스의 입력받은 x위치(null 확인 위해)
+     * @return 입력받은 x, y에 있는 피스가 null이라면 true반환
+     */
+    private boolean isSelectedPieceNull(int originX, int originY) {
+        return chessBoard.findPiece(originX, originY) == null;
+    }
+
+    /**
+     * 현재 턴 컬러와 같은 컬러의 피스를 선택했는지
+     * @param originX 놓을 피스의 입력받은 x위치
+     * @param originY 놓을 피스의 입력받은 Y위치
+     * @param turn 현재 turn
+     * @return 현재 턴 컬러와 같은 컬러의 피스를 선택했다면 true 반환
+     */
+    private boolean isColorSameWithCurrentTurn(int originX, int originY, GameTurn turn) {
+        PieceColor currentTurnColor = switch (turn) {
+            case GameTurn.WHITE -> {
+                yield PieceColor.WHITE;
+            }
+            case GameTurn.BLACK -> {
+                yield PieceColor.BLACK;
+            }
+            default -> throw new IllegalStateException("도달할 수 없는 구문");
+        };
+
+        return chessBoard.findPiece(originX, originY).getColor() == currentTurnColor;
+    }
+
+    // 게임의 전반적인 설명제공
     private void gameInformation() {
         System.out.println("""
         -------------------------------------------------

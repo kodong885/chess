@@ -39,7 +39,7 @@ public class UserInput {
                 x = Integer.parseInt(positionSplit[0]);
                 y = Integer.parseInt(positionSplit[1]);
 
-                if ((x >= 1 && x <= 8) && (y >= 1 && y < 8)) {
+                if ((x >= 1 && x <= 8) && (y >= 1 && y <= 8)) {
                     break;
                 } else {
                     System.out.println("---- 1~8 중의 값을 입력하세요 ----");
