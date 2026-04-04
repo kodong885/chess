@@ -10,6 +10,7 @@ import com.koDong.domain.validator.checkmateValidator.CheckmateValidator;
 import com.koDong.domain.validator.moveValidator.MoveValidator;
 import com.koDong.utils.SetGameTurn;
 import com.koDong.utils.UserInput;
+import com.koDong.view.ViewChessBoard;
 
 public class GameService {
     ChessBoard chessBoard;
@@ -31,10 +32,13 @@ public class GameService {
         MoveValidator moveV = new MoveValidator();
         CheckValidator checkV = new CheckValidator();
         CheckmateValidator checkmateV = new CheckmateValidator();
+        ViewChessBoard view = new ViewChessBoard();
 
         // main game loop
         boolean isRunning = true;
         while (isRunning) {
+            view.viewChessBoard(chessBoard);
+
             System.out.println(String.format("<---- %s turn ---->", turn.getColor()));
             Piece selectedPiece = selectPiece(moveV, turn); // 놓을 피스 선택하기 위한 위치
 
@@ -54,6 +58,7 @@ public class GameService {
                 default -> throw new IllegalStateException("GameState는 CONTINUE, CHECK, CHECKMATE만 가능합니다.");
             }
 
+            view.viewChessBoard(chessBoard);
             turn = setGameTurn.updateGameTurn(turn);
         }
         // Game End
@@ -157,13 +162,13 @@ public class GameService {
     }
 
     /**
-     * 피스 놓기
+     * 피스 놓기 ( 놓고자하는 위치가 null인 경우에만..?
      * @param selectedPiece 놓기 위한 피스
-     * @param turn
-     * @param moveV
-     * @param checkV
-     * @param checkmateV
-     * @param setGameTurn
+     * @param turn 현재 턴
+     * @param moveV MoveValidator의 인스턴스
+     * @param checkV CheckValidator의 인스턴스
+     * @param checkmateV CheckmateValidator의 인스턴스
+     * @param setGameTurn SetGameTurn의 인스턴스
      */
     private GameState placePiece(Piece selectedPiece, GameTurn turn, MoveValidator moveV, CheckValidator checkV, CheckmateValidator checkmateV, SetGameTurn setGameTurn) {
         int targetX;
@@ -190,6 +195,7 @@ public class GameService {
                 System.out.println("---- 위치를 다시 입력하세요 ----");
             }
         }
+
         return GameState.CONTINUE;
     }
 
