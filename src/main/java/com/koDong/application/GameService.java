@@ -42,7 +42,7 @@ public class GameService {
             System.out.println(String.format("<---- %s turn ---->", turn.getColor()));
             Piece selectedPiece = selectPiece(moveV, turn); // 놓을 피스 선택하기 위한 위치
 
-            GameState gameState = placePiece(selectedPiece, turn, moveV, checkV, checkmateV, setGameTurn);
+            GameState gameState = placePiece(selectedPiece, turn, false ,moveV, checkV, checkmateV);
 
             System.out.println(gameState);
             switch (gameState) {
@@ -50,7 +50,7 @@ public class GameService {
                     // continue
                 }
                 case GameState.CHECK -> {
-                    inCheckService(turn, chessBoard, setGameTurn, userInput, moveV, checkV);
+                    inCheckService(turn, chessBoard, setGameTurn, userInput, moveV, checkV, checkmateV);
                 }
                 case GameState.CHECKMATE -> {
                     isRunning = false;
@@ -67,53 +67,29 @@ public class GameService {
     /**
      * 체크 상황에서 작동하는 서비스 메서드
      */
-    private void inCheckService(GameTurn turn, ChessBoard chessBoard, SetGameTurn st, UserInput userInput, MoveValidator moveV, CheckValidator checkV) {
-        System.out.println("---- <컬러>의 킹이 체크 상황입니다. ----");
+    private void inCheckService(GameTurn turn, ChessBoard chessBoard, SetGameTurn st, UserInput userInput, MoveValidator moveV, CheckValidator checkV, CheckmateValidator checkmateV) {
+        System.out.println("<<---- <컬러>의 킹이 체크 상황입니다. ---->>");
 
-        External : while (true) {
+        boolean isRunning = true;
+        while (isRunning) {
             st.updateGameTurn(turn);
 
-            System.out.println("---- 피스를 선택하세요 ----");
-            int[] positon = userInput.enterPosition();
-            Piece selectedPiece = chessBoard.findPiece(positon[0], positon[1]); // 옮겨지는 피스
+            Piece selectedPiece = selectPiece(moveV, turn);
+            GameState gameState = placePiece(selectedPiece, turn, true, moveV, checkV, checkmateV);
 
-            // 해당 피스를 놓았을때, 피스가 체크에서 벗어나게 할 수 있는 위치에만 놓을 수 있도록함.
-            int targetX;
-            int targetY;
-            int originX = selectedPiece.getCurrentX(); // 놓을 피스의 놓기 전 x위치
-            int originY = selectedPiece.getCurrentY(); // 놓을 피스의 놓기 전 y위치
-            while (true) {
-                System.out.println("---- 피스를 놓아주세요 ----");
-                int[] targetPosition = userInput.enterPosition();
-                targetX = targetPosition[0];
-                targetY = targetPosition[1];
-                if (selectedPiece.canMoveTo(targetX, targetY) && moveV.validateMove(chessBoard.getChessBoard(), selectedPiece, targetX, targetY)) {
-                    // 체크에서 풀려나면, 놓은 체스는 그대로(=실제로 놓기)
-                    // 체크에서 풀려나지 않으면, 체스 원상복귀
-                    if (chessBoard.findPiece(targetX, targetY) == null) {
-                        // 놓고자하는 위치에 아무런 피스가 없는 경우(null)에는
-                        chessBoard.placePiece(selectedPiece, targetX, targetY);
-                        if (!checkV.isCheck(turn, chessBoard)) {
-                            // 체크에서 풀려남
-                            break External;
-                        } else {
-                            // 체크에서 풀려나지않음 --> 다시 시도를 위해 원상복귀
-                            chessBoard.restorePlace(originX, originY, targetX, targetY);
-                        }
-                    } else {
-                        // 놓고자하는 위치에 상대편 컬러의 피스가 있는 경우
-                        Piece attackedPiece = chessBoard.placePieceForTest(selectedPiece, targetX, targetY);
-                        if (!checkV.isCheck(turn, chessBoard)) {
-                            // 체크에서 풀려남
-                            break External;
-                        } else {
-                            // 체크에서 풀려나지 않음
-                            chessBoard.restoreAttack(selectedPiece, attackedPiece, originX, originY, targetX, targetY);
-                        }
-                    }
-
+            switch (gameState) {
+                case GameState.CONTINUE -> {
+                    isRunning = false;
+                }
+                case GameState.CHECK -> {
+                    // continue
+                }
+                case GameState.CHECKMATE -> {
+                    // FIXME (placePiece에 checkmate 리턴 로직 추가 필요 및 )
                 }
             }
+
+
 
         }
     }
@@ -162,15 +138,16 @@ public class GameService {
     }
 
     /**
-     * 피스 놓기 ( 놓고자하는 위치가 null인 경우에만..?
+     * 피스 놓기 (놓는 곳에 상대 피스가 있고, 놓을 수 있다면 공격도 가능)
      * @param selectedPiece 놓기 위한 피스
      * @param turn 현재 턴
+     * @param inCheck 현재 체크 상태인지
      * @param moveV MoveValidator의 인스턴스
      * @param checkV CheckValidator의 인스턴스
      * @param checkmateV CheckmateValidator의 인스턴스
-     * @param setGameTurn SetGameTurn의 인스턴스
+     * @return
      */
-    private GameState placePiece(Piece selectedPiece, GameTurn turn, MoveValidator moveV, CheckValidator checkV, CheckmateValidator checkmateV, SetGameTurn setGameTurn) {
+    private GameState placePiece(Piece selectedPiece, GameTurn turn, boolean inCheck, MoveValidator moveV, CheckValidator checkV, CheckmateValidator checkmateV) {
         int targetX;
         int targetY;
         while (true) {
@@ -179,24 +156,60 @@ public class GameService {
             targetX = targetPosition[0];
             targetY = targetPosition[1];
             if (selectedPiece.canMoveTo(targetX, targetY) && moveV.validateMove(chessBoard.getChessBoard(), selectedPiece, targetX, targetY)) {
-                chessBoard.placePiece(selectedPiece, targetX, targetY);
+                if (!inCheck) {
+                    // 체크 상황이 아닐때 (일반상황)
+                    chessBoard.placePiece(selectedPiece, targetX, targetY);
 
-                if (checkV.isCheck(turn, chessBoard)) {
-                    if (checkmateV.isCheckmate(turn, chessBoard)) {
-                        return GameState.CHECKMATE;
+                    if (checkV.isCheck(turn, chessBoard)) {
+                        if (checkmateV.isCheckmate(turn, chessBoard)) {
+                            return GameState.CHECKMATE;
+                        } else {
+                            return GameState.CHECK;
+                        }
+                    }
+
+                    // 피스를 놓았는데, 체크도 아니고 체크메이트도 아님
+                    return GameState.CONTINUE;
+
+                } else {
+                    // 체크 상황일때 (inCheckService에서 사용되는 로직)
+                    int originX = selectedPiece.getCurrentX(); // 놓을 피스의 놓기 전 x위치
+                    int originY = selectedPiece.getCurrentY(); // 놓을 피스의 놓기 전 y위치
+
+                    // 체크에서 풀려나면, 놓은 체스는 그대로(=실제로 놓기)
+                    // 체크에서 풀려나지 않으면, 체스 원상복귀 (다시 놓기)
+                    if (chessBoard.findPiece(targetX, targetY) == null) {
+                        // 놓고자하는 위치에 아무런 피스가 없는 경우(null)에는
+                        chessBoard.placePiece(selectedPiece, targetX, targetY);
+                        if (!checkV.isCheck(turn, chessBoard)) {
+                            // 체크에서 풀려남 (실제로 놓기)
+                            // FIXME (체크 메이트도 추가해야함!!)
+                            return GameState.CONTINUE;
+                        } else {
+                            // 체크에서 풀려나지 않음 --> 다시 놓기 위해 원상 복귀
+                            chessBoard.restorePlace(originX, originY, targetX, targetY);
+                            return GameState.CHECK;
+                        }
                     } else {
-                        return GameState.CHECK;
+                        // 놓고자하는 위치에 상대편 컬러의 피스가 있는 경우
+                        Piece attackedPiece = chessBoard.placePieceForTest(selectedPiece, targetX, targetY);
+                        if (!checkV.isCheck(turn, chessBoard)) {
+                            // 체크에서 풀려남 (실제로 놓기)
+                            return GameState.CONTINUE;
+                        } else {
+                            // 체크에서 풀려나지 않음 --> 다시 놓기 위해 원상복귀
+                            chessBoard.restoreAttack(selectedPiece, attackedPiece, originX, originY, targetX, targetY);
+                            return GameState.CHECK;
+                        }
                     }
                 }
 
-                break; // while문을 종료 (CONTINUE)
             } else {
                 System.out.println("---- 놓을 수 없는 위치입니다. ----");
                 System.out.println("---- 위치를 다시 입력하세요 ----");
             }
         }
 
-        return GameState.CONTINUE;
     }
 
     // 유저 초기화
