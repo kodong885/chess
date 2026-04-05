@@ -37,14 +37,14 @@ public class GameService {
         // main game loop
         boolean isRunning = true;
         while (isRunning) {
-            view.viewChessBoard(chessBoard);
+            view.viewChessBoard(chessBoard.getChessBoard());
 
             System.out.println(String.format("<---- %s turn ---->", turn.getColor()));
             Piece selectedPiece = selectPiece(moveV, turn); // 놓을 피스 선택하기 위한 위치
 
-            view.viewChessBoard(chessBoard);
+            view.viewChessBoard(chessBoard.getChessBoard());
             GameState gameState = placePiece(selectedPiece, turn, false ,moveV, checkV, checkmateV);
-            view.viewChessBoard(chessBoard);
+            view.viewChessBoard(chessBoard.getChessBoard());
 
             System.out.println(gameState);
             switch (gameState) {
@@ -69,7 +69,7 @@ public class GameService {
      * 체크 상황에서 작동하는 서비스 메서드
      */
     private void inCheckService(GameTurn turn, SetGameTurn st, MoveValidator moveV, CheckValidator checkV, CheckmateValidator checkmateV, ViewChessBoard view) {
-        view.viewChessBoard(chessBoard);
+        view.viewChessBoard(chessBoard.getChessBoard());
 
         kingCheckMessage(turn); // <WHITE또는 BLACK> king이 체크 입니다.
 
@@ -78,10 +78,10 @@ public class GameService {
 
         boolean isRunning = true;
         while (isRunning) {
-            view.viewChessBoard(chessBoard);
+            view.viewChessBoard(chessBoard.getChessBoard());
             Piece selectedPiece = selectPiece(moveV, turn);
             GameState gameState = placePiece(selectedPiece, turn, true, moveV, checkV, checkmateV);
-            view.viewChessBoard(chessBoard);
+            view.viewChessBoard(chessBoard.getChessBoard());
 
             switch (gameState) {
                 case GameState.CONTINUE -> {
