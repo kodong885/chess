@@ -91,7 +91,6 @@ public class ChessBoard {
         placePiece(whiteKing, 4, 7);
     }
 
-    // FIXME (private인데 CheckmateValidator 및 CheckValidator에서 getter를 사용 중..)
     public Piece[][] getChessBoard() {
         return this.chessBoard;
     }

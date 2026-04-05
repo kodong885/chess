@@ -32,7 +32,7 @@ public class GameService {
         MoveValidator moveV = new MoveValidator();
         CheckValidator checkV = new CheckValidator();
         CheckmateValidator checkmateV = new CheckmateValidator();
-        ViewChessBoard view = new ViewChessBoard();
+        ViewChessBoard view = new ViewChessBoard(whiteUser, blackUser);
 
         // main game loop
         boolean isRunning = true;
@@ -42,7 +42,9 @@ public class GameService {
             System.out.println(String.format("<---- %s turn ---->", turn.getColor()));
             Piece selectedPiece = selectPiece(moveV, turn); // 놓을 피스 선택하기 위한 위치
 
+            view.viewChessBoard(chessBoard);
             GameState gameState = placePiece(selectedPiece, turn, false ,moveV, checkV, checkmateV);
+            view.viewChessBoard(chessBoard);
 
             System.out.println(gameState);
             switch (gameState) {
@@ -50,7 +52,7 @@ public class GameService {
                     // continue
                 }
                 case GameState.CHECK -> {
-                    inCheckService(turn, chessBoard, setGameTurn, userInput, moveV, checkV, checkmateV);
+                    inCheckService(turn, setGameTurn, moveV, checkV, checkmateV, view);
                 }
                 case GameState.CHECKMATE -> {
                     isRunning = false;
@@ -58,7 +60,6 @@ public class GameService {
                 default -> throw new IllegalStateException("GameState는 CONTINUE, CHECK, CHECKMATE만 가능합니다.");
             }
 
-            view.viewChessBoard(chessBoard);
             turn = setGameTurn.updateGameTurn(turn);
         }
         // Game End
@@ -67,31 +68,43 @@ public class GameService {
     /**
      * 체크 상황에서 작동하는 서비스 메서드
      */
-    private void inCheckService(GameTurn turn, ChessBoard chessBoard, SetGameTurn st, UserInput userInput, MoveValidator moveV, CheckValidator checkV, CheckmateValidator checkmateV) {
-        System.out.println("<<---- <컬러>의 킹이 체크 상황입니다. ---->>");
+    private void inCheckService(GameTurn turn, SetGameTurn st, MoveValidator moveV, CheckValidator checkV, CheckmateValidator checkmateV, ViewChessBoard view) {
+        view.viewChessBoard(chessBoard);
+
+        kingCheckMessage(turn); // <WHITE또는 BLACK> king이 체크 입니다.
+
+        st.updateGameTurn(turn);
+        System.out.println(String.format("<---- %s turn ---->", turn.getColor()));
 
         boolean isRunning = true;
         while (isRunning) {
-            st.updateGameTurn(turn);
-
+            view.viewChessBoard(chessBoard);
             Piece selectedPiece = selectPiece(moveV, turn);
             GameState gameState = placePiece(selectedPiece, turn, true, moveV, checkV, checkmateV);
+            view.viewChessBoard(chessBoard);
 
             switch (gameState) {
                 case GameState.CONTINUE -> {
                     isRunning = false;
                 }
-                case GameState.CHECK -> {
-                    // continue
+                case GameState.CHECK, GameState.CHECKMATE -> {
+                    System.out.println("---- 해당 위치에는 놓을 수 없습니다. 다시 놓아주세요 ----");
                 }
-                case GameState.CHECKMATE -> {
-                    // FIXME (placePiece에 checkmate 리턴 로직 추가 필요 및 )
-                }
+                default -> throw new IllegalStateException("도달할 수 없는 구문");
             }
-
-
-
         }
+    }
+
+    private void kingCheckMessage(GameTurn currentTurn) {
+        switch (currentTurn) {
+            case GameTurn.WHITE -> {
+                System.out.println(String.format("---- %s king이 체크입니다. ----", "BLACK"));
+            }
+            case GameTurn.BLACK -> {
+                System.out.println(String.format("---- %s king이 체크 입니다. ----", "WHITE"));
+            }
+        }
+
     }
 
     private Piece selectPiece(MoveValidator moveV, GameTurn turn) {
@@ -183,10 +196,12 @@ public class GameService {
                         chessBoard.placePiece(selectedPiece, targetX, targetY);
                         if (!checkV.isCheck(turn, chessBoard)) {
                             // 체크에서 풀려남 (실제로 놓기)
-                            // FIXME (체크 메이트도 추가해야함!!)
                             return GameState.CONTINUE;
                         } else {
-                            // 체크에서 풀려나지 않음 --> 다시 놓기 위해 원상 복귀
+                            // 체크에서 풀려나지 않음 (여전히 check인 경우 또는 checkmate)
+                            if (checkmateV.isCheckmate(turn, chessBoard)) {
+                                return GameState.CHECKMATE;
+                            }
                             chessBoard.restorePlace(originX, originY, targetX, targetY);
                             return GameState.CHECK;
                         }
@@ -197,7 +212,10 @@ public class GameService {
                             // 체크에서 풀려남 (실제로 놓기)
                             return GameState.CONTINUE;
                         } else {
-                            // 체크에서 풀려나지 않음 --> 다시 놓기 위해 원상복귀
+                            // 체크에서 풀려나지 않음 (여전히 check인 경우 또는 checkmate)
+                            if (checkmateV.isCheckmate(turn, chessBoard)) {
+                                return GameState.CHECKMATE;
+                            }
                             chessBoard.restoreAttack(selectedPiece, attackedPiece, originX, originY, targetX, targetY);
                             return GameState.CHECK;
                         }

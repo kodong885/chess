@@ -4,15 +4,14 @@ public enum GameTurn {
     WHITE("WHITE"),
     BLACK("BLACK");
 
-    private String color;
+    private final String color;
 
-    private GameTurn(String color) {
+    GameTurn(String color) {
         this.color = color;
     }
 
     public String getColor() {
         return this.color;
     }
-
 
 }
