@@ -39,14 +39,15 @@ public class GameService {
         while (isRunning) {
             view.viewChessBoard(chessBoard.getChessBoard());
 
-            System.out.println(String.format("<---- %s turn ---->", turn.getColor()));
+            System.out.println(String.format("( %s turn )", turn.getColor()));
             Piece selectedPiece = selectPiece(moveV, turn); // 놓을 피스 선택하기 위한 위치
 
             view.viewChessBoard(chessBoard.getChessBoard());
             GameState gameState = placePiece(selectedPiece, turn, false ,moveV, checkV, checkmateV);
-            view.viewChessBoard(chessBoard.getChessBoard());
 
             System.out.println(gameState);
+            System.out.println("");
+
             switch (gameState) {
                 case GameState.CONTINUE -> {
                     // continue
@@ -74,7 +75,7 @@ public class GameService {
         kingCheckMessage(turn); // <WHITE또는 BLACK> king이 체크 입니다.
 
         st.updateGameTurn(turn);
-        System.out.println(String.format("<---- %s turn ---->", turn.getColor()));
+        System.out.println(String.format("( %s turn )", turn.getColor()));
 
         boolean isRunning = true;
         while (isRunning) {
@@ -114,7 +115,7 @@ public class GameService {
         int originY; // 놓을 피스의 y위치
         Piece selectedPiece;
         while (true) {
-            System.out.println("---- 피스를 선택해주세요 ----");
+            System.out.println("(-- 피스를 선택해주세요 --)");
             position = userInput.enterPosition();
             originX = position[0];
             originY = position[1];
@@ -164,7 +165,7 @@ public class GameService {
         int targetX;
         int targetY;
         while (true) {
-            System.out.println("---- 피스를 놓아주세요 ----");
+            System.out.println("(-- 피스를 놓아주세요 --)");
             int[] targetPosition = userInput.enterPosition();
             targetX = targetPosition[0];
             targetY = targetPosition[1];

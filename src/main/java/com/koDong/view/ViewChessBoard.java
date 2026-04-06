@@ -1,7 +1,6 @@
 package com.koDong.view;
 
 import com.koDong.domain.User.User;
-import com.koDong.domain.chessBoard.ChessBoard;
 import com.koDong.domain.chessPiece.Piece;
 import com.koDong.domain.chessPiece.PieceColor;
 import com.koDong.domain.chessPiece.PieceType;
