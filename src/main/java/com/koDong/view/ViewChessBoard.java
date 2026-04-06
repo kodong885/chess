@@ -15,18 +15,18 @@ public class ViewChessBoard {
     }
 
     public void viewChessBoard(Piece[][] chessBoard) {
-        // TODO (체스보드랑 다른 메시지랑 구분되도록, 위아래 한 칸 띄어주고, ----- 와 같은 기호로 추가하여 구현하기)
         String chessBoardForView = String.format("""
-                <---- %s (BLACK) ---->
-                [%s][%s][%s][%s][%s][%s][%s][%s]
-                [%s][%s][%s][%s][%s][%s][%s][%s]
-                [%s][%s][%s][%s][%s][%s][%s][%s]
-                [%s][%s][%s][%s][%s][%s][%s][%s]
-                [%s][%s][%s][%s][%s][%s][%s][%s]
-                [%s][%s][%s][%s][%s][%s][%s][%s]
-                [%s][%s][%s][%s][%s][%s][%s][%s]
-                [%s][%s][%s][%s][%s][%s][%s][%s]
-                <---- %s (WHITE) ---->
+                <----- %s (BLACK) ----->
+                   1  2  3  4  5  6  7  8
+                1 [%s][%s][%s][%s][%s][%s][%s][%s]
+                2 [%s][%s][%s][%s][%s][%s][%s][%s]
+                3 [%s][%s][%s][%s][%s][%s][%s][%s]
+                4 [%s][%s][%s][%s][%s][%s][%s][%s]
+                5 [%s][%s][%s][%s][%s][%s][%s][%s]
+                6 [%s][%s][%s][%s][%s][%s][%s][%s]
+                7 [%s][%s][%s][%s][%s][%s][%s][%s]
+                8 [%s][%s][%s][%s][%s][%s][%s][%s]
+                <----- %s (WHITE) ----->
                 """,
                 blackUser.getName(),
 

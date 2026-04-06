@@ -16,14 +16,14 @@ public class ChessBoard {
         Piece blackPawn6 = new Pawn(5, 1, PieceColor.BLACK);
         Piece blackPawn7 = new Pawn(6, 1, PieceColor.BLACK);
         Piece blackPawn8 = new Pawn(7, 1, PieceColor.BLACK);
-        placePiece(blackPawn1, 0, 1);
-        placePiece(blackPawn2, 1, 1);
-        placePiece(blackPawn3, 2, 1);
-        placePiece(blackPawn4, 3, 1);
-        placePiece(blackPawn5, 4, 1);
-        placePiece(blackPawn6, 5, 1);
-        placePiece(blackPawn7, 6, 1);
-        placePiece(blackPawn8, 7, 1);
+        initializePiece(blackPawn1, 0, 1);
+        initializePiece(blackPawn2, 1, 1);
+        initializePiece(blackPawn4, 3, 1);
+        initializePiece(blackPawn3, 2, 1);
+        initializePiece(blackPawn5, 4, 1);
+        initializePiece(blackPawn6, 5, 1);
+        initializePiece(blackPawn7, 6, 1);
+        initializePiece(blackPawn8, 7, 1);
 
         // White Pawn
         Piece whitePawn1 = new Pawn(0, 6, PieceColor.WHITE);
@@ -34,61 +34,68 @@ public class ChessBoard {
         Piece whitePawn6 = new Pawn(5, 6, PieceColor.WHITE);
         Piece whitePawn7 = new Pawn(6, 6, PieceColor.WHITE);
         Piece whitePawn8 = new Pawn(7, 6, PieceColor.WHITE);
-        placePiece(whitePawn1, 0, 6);
-        placePiece(whitePawn2, 1, 6);
-        placePiece(whitePawn3, 2, 6);
-        placePiece(whitePawn4, 3, 6);
-        placePiece(whitePawn5, 4, 6);
-        placePiece(whitePawn6, 5, 6);
-        placePiece(whitePawn7, 6, 6);
-        placePiece(whitePawn8, 7, 6);
+        initializePiece(whitePawn1, 0, 6);
+        initializePiece(whitePawn2, 1, 6);
+        initializePiece(whitePawn3, 2, 6);
+        initializePiece(whitePawn4, 3, 6);
+        initializePiece(whitePawn5, 4, 6);
+        initializePiece(whitePawn6, 5, 6);
+        initializePiece(whitePawn7, 6, 6);
+        initializePiece(whitePawn8, 7, 6);
 
         // Black Rook
         Piece blackRook1 = new Rook(0, 0, PieceColor.BLACK);
         Piece blackRook2 = new Rook(7, 0, PieceColor.BLACK);
-        placePiece(blackRook1, 0, 0);
-        placePiece(blackRook2, 7, 0);
+        initializePiece(blackRook1, 0, 0);
+        initializePiece(blackRook2, 7, 0);
         // White Rook
         Piece whiteRook1 = new Rook(0, 7, PieceColor.WHITE);
         Piece whiteRook2 = new Rook(7, 7, PieceColor.WHITE);
-        placePiece(whiteRook1, 0, 7);
-        placePiece(whiteRook2, 7, 7);
+        initializePiece(whiteRook1, 0, 7);
+        initializePiece(whiteRook2, 7, 7);
 
         // Black Knight
         Piece blackKnight1 = new Knight(1, 0, PieceColor.BLACK);
         Piece blackKnight2 = new Knight(6, 0, PieceColor.BLACK);
-        placePiece(blackKnight1, 1, 0);
-        placePiece(blackKnight2, 6, 0);
+        initializePiece(blackKnight1, 1, 0);
+        initializePiece(blackKnight2, 6, 0);
         // White Knight
         Piece whiteKnight1 = new Knight(1, 7, PieceColor.WHITE);
         Piece whiteKnight2 = new Knight(6, 7, PieceColor.WHITE);
-        placePiece(whiteKnight1, 1, 7);
-        placePiece(whiteKnight2, 6, 7);
+        initializePiece(whiteKnight1, 1, 7);
+        initializePiece(whiteKnight2, 6, 7);
 
         // Black Bishop
         Piece blackBishop1 = new Bishop(2, 0, PieceColor.BLACK);
         Piece blackBishop2 = new Bishop(5, 0, PieceColor.BLACK);
-        placePiece(blackBishop1, 2, 0);
-        placePiece(blackBishop2, 5, 0);
+        initializePiece(blackBishop1, 2, 0);
+        initializePiece(blackBishop2, 5, 0);
         // White Bishop
         Piece whiteBishop1 = new Bishop(2, 7, PieceColor.WHITE);
         Piece whiteBishop2 = new Bishop(5, 7, PieceColor.WHITE);
-        placePiece(whiteBishop1, 2, 7);
-        placePiece(whiteBishop2, 5, 7);
+        initializePiece(whiteBishop1, 2, 7);
+        initializePiece(whiteBishop2, 5, 7);
 
         // Black Queen
         Piece blackQueen = new Queen(3, 0, PieceColor.BLACK);
-        placePiece(blackQueen, 3, 0);
+        initializePiece(blackQueen, 3, 0);
         // White Queen
         Piece whiteQueen = new Queen(3, 7, PieceColor.WHITE);
-        placePiece(whiteQueen, 3, 7);
+        initializePiece(whiteQueen, 3, 7);
 
         // Black King
         Piece blackKing = new King(4, 0, PieceColor.BLACK);
-        placePiece(blackKing, 4, 0);
+        initializePiece(blackKing, 4, 0);
         // White King
         Piece whiteKing = new King(4, 7, PieceColor.WHITE);
-        placePiece(whiteKing, 4, 7);
+        initializePiece(whiteKing, 4, 7);
+    }
+
+    /*
+   ChessBoard를 초기화 시킬때, 즉 처음 피스를 세팅할 때만 사용해야한다.
+     */
+    private void initializePiece(Piece selectedPiece, int targetX, int targetY) {
+        chessBoard[targetY][targetX] = selectedPiece;
     }
 
     public Piece[][] getChessBoard() {
@@ -101,12 +108,23 @@ public class ChessBoard {
     }
 
     /**
+     * 타켓 위치에 피스를 놓은 후, 해당 피스의 기존 위치에 있는 피스를 삭제함.
      * @param selectedPiece 놓고자하는 피스
      * @param targetX 놓고자하는 x위치
      * @param targetY 놓고자하는 y위치
      */
     public void placePiece(Piece selectedPiece, int targetX, int targetY) {
+        // 피스 놓기 및 피스의 x, y필드 업데이트
         chessBoard[targetY][targetX] = selectedPiece;
+
+        // 기존 피스 위치에 있는 기존 피스 삭제
+        int originX = selectedPiece.getCurrentX();
+        int originY = selectedPiece.getCurrentY();
+        chessBoard[originY][originX] = null;
+
+        // 피스의 x, y필드 업데이트 (위치 업데이트)
+        findPiece(targetX, targetY).setX(targetX);
+        findPiece(targetX, targetY).setY(targetY);
     }
 
     public King getKing(PieceColor color) throws NoKingExistException {

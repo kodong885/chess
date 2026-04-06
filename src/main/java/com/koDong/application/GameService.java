@@ -96,6 +96,7 @@ public class GameService {
         }
     }
 
+    // WHITE또는 BLACK 킹이 체크되었다고 말해주기
     private void kingCheckMessage(GameTurn currentTurn) {
         switch (currentTurn) {
             case GameTurn.WHITE -> {

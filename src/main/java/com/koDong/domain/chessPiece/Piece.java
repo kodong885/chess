@@ -30,6 +30,14 @@ public abstract class Piece {
         return this.color;
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
     // FIXME(오버라이딩시, 맨 첫줄에 targetX, targetY가 outOfBoard인지 검사하는 로직작성 필요)
     public abstract boolean canMoveTo(int targetX, int targetY);
 
