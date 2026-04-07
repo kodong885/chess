@@ -114,7 +114,7 @@ public class ChessBoard {
      * @param targetY 놓고자하는 y위치
      */
     public void placePiece(Piece selectedPiece, int targetX, int targetY) {
-        // 피스 놓기 및 피스의 x, y필드 업데이트
+        // 피스 놓기
         chessBoard[targetY][targetX] = selectedPiece;
 
         // 기존 피스 위치에 있는 기존 피스 삭제
