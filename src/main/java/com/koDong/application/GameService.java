@@ -132,7 +132,7 @@ public class GameService {
                 if (moveV.canSelectedPieceMove(chessBoard, selectedPiece, turn)) {
                     // 선택된 피스가 갇혀있지 않은 경우 (어떤 곳이든 이동할 곳이 있음)
                     // 컬러-피스종류-x/y 순
-                    System.out.println(String.format("(%s-%s-%d/%d 선택함)", selectedPiece.getColor(), selectedPiece.getType(), selectedPiece.getCurrentX(), selectedPiece.getCurrentY()));
+                    System.out.println(String.format("(%s-%s-%d/%d 선택함)", selectedPiece.getColor(), selectedPiece.getType(), selectedPiece.getCurrentX()+1, selectedPiece.getCurrentY()+1));
 
                     System.out.println("---- 피스를 재선택하시습니까? (y/n) ----");
                     UserDecision decision = userInput.yesOrNo();

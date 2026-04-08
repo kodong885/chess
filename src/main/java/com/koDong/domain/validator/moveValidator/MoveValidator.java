@@ -28,11 +28,13 @@ public class MoveValidator {
         if (isPositionOnChessBoard(targetX, targetY)) {
             switch (selectedPiece.getType()) {
                 case PieceType.KING, KNIGHT -> {
-                    // null인 경우 : 놓을 수 있음.
-                    // 다른 컬러 : 놓을 수 있음.
-                    // 같은 컬러(X) : 놓을 수 없음.
-                    return chessBoard[targetY][targetX] == null || // ArrayIndexOutOfBoundsException
-                            !(chessBoard[targetY][targetX].getColor().equals(selectedPiece.getColor()));
+                    /*
+                    - null인 경우 : 놓을 수 있음
+                    - 다른 컬러 : 놓을 수 있음
+                    - 같은 컬러 : 놓을 수 없음
+                     */
+                    return chessBoard[targetY][targetX] == null ||
+                            isTargetPieceDifferent(chessBoard, selectedPiece.getColor(), targetX, targetY);
                 }
 
                 case PieceType.QUEEN -> {
@@ -63,22 +65,22 @@ public class MoveValidator {
                 case PieceType.PAWN -> {
                     int x = Math.abs(selectedPiece.getCurrentX() - targetX);
 
-                    // 흰색 피스의 경우
                     if (selectedPiece.getColor().equals(PieceColor.WHITE)) {
-                        // 대각선 이동의 경우 (공격)
+                        // 흰색 피스의 경우
                         if (x == 1) {
-                            return chessBoard[targetY][targetX].getColor().equals(PieceColor.BLACK); // FIXME (여기서 NPE가 발생할때 처리로직을 작성해야한다!)
+                            // 대각선 이동의 경우 (공격) (해당 위치의 피스가 null이 아니어야하고, 다른 컬러여야함)
+                            return isTargetPieceDifferent(chessBoard, selectedPiece.getColor(), targetX, targetY);
                         } else {
-                            // 직선 이동
+                            // 직선 이동 (null인 경우에만 이동가능)
                             return chessBoard[targetY][targetX] == null;
                         }
                     } else {
                         // 검은색 피스의 경우
-                        // 대각선 이동의 경우 (공격)
                         if (x == 1) {
-                            return chessBoard[targetY][targetX].getColor().equals(PieceColor.WHITE); // FIXME (여기서 NPE가 발생할때 처리로직을 작성해야한다!)
+                            // 대각선 이동의 경우 (공격) (해당 위치의 피스가 null이 아니어야하고, 다른 컬러여야함)
+                            return isTargetPieceDifferent(chessBoard, selectedPiece.getColor(), targetX, targetY);
                         } else {
-                            // 직선 이동
+                            // 직선 이동 (null인 경우에만 이동가능)
                             return chessBoard[targetY][targetX] == null;
                         }
                     }
@@ -95,8 +97,21 @@ public class MoveValidator {
     }
 
     /**
+     * 타켓 위치에 있는 피스가 놓고자하는 피스와 다른 컬러인지 검증
+     * (해당 위치의 피스가 null이 아니어야하고, 다른 컬러여야함)
+     * @return 해당 위치에 다른 피스의 컬러가 있는 경우 true반환
+     */
+    private boolean isTargetPieceDifferent(Piece[][] chessBoard, PieceColor selectedPieceColor, int targetX, int targetY) {
+        try {
+            return chessBoard[targetY][targetX].getColor() != selectedPieceColor;
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+
+    /**
      * 선택된 피스가 이동하는 것이 가능한지 판단함. (막혀있는지 판단함)
-     * 1. '좌표가 체스보드 내에 있는지 (0~7인지)'인지,
+     * 1. 좌표가 체스보드 내에 있는지 (0~7인지)'인지,
      * 2. 그 좌표에 아무런 피스가 없거나(null), 다른 컬러여야함
      **/
     public boolean canSelectedPieceMove(ChessBoard chessBoard, Piece selectedPiece, GameTurn turn) {
@@ -185,7 +200,7 @@ public class MoveValidator {
      */
     private boolean isNullOrDifferentColor(ChessBoard chessBoard, Piece selectedPiece, int targetX, int targetY) {
         return (chessBoard.findPiece(targetX, targetY) == null) ||
-                (chessBoard.findPiece(targetX, targetY).getColor() != selectedPiece.getColor());
+                isTargetPieceDifferent(chessBoard.getChessBoard(), selectedPiece.getColor(), targetX, targetY);
     }
 
 }
